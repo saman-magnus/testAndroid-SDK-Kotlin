@@ -5,6 +5,8 @@ import com.example.zarinpal.data.remote.PaymentService
 import com.example.zarinpal.data.remote.dto.Config
 import com.example.zarinpal.data.remote.dto.create.CreatePaymentRequest
 import com.example.zarinpal.data.remote.dto.create.CreatePaymentResponse
+import com.example.zarinpal.data.remote.dto.verification.PaymentVerifyRequest
+import com.example.zarinpal.data.remote.dto.verification.VerificationResponse
 import kotlinx.coroutines.runBlocking
 
 class ZarinPal(config: Config) {
@@ -24,6 +26,14 @@ class ZarinPal(config: Config) {
             )
             redirectUrl(paymentGatewayUri, response?.data?.code ?: 0)
             response
+        }
+    }
+
+    fun paymentVerify(
+        paymentVerifyRequest: PaymentVerifyRequest
+    ): VerificationResponse? {
+        return runBlocking {
+            service.paymentVerify(paymentVerifyRequest)
         }
     }
 }

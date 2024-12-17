@@ -14,7 +14,7 @@ object HttpRoutes {
         return (if (sandBox) BASE_URL_SANDBOX else BASE_URL) + PAYMENT
     }
 
-    fun createPaymentVerify(sandBox: Boolean): String {
+    fun paymentVerify(sandBox: Boolean): String {
         return (if (sandBox) BASE_URL_SANDBOX else BASE_URL) + PAYMENT_VERIFY
     }
 

@@ -3,6 +3,8 @@ package com.example.zarinpal.data.remote
 import com.example.zarinpal.data.remote.dto.Config
 import com.example.zarinpal.data.remote.dto.create.CreatePaymentRequest
 import com.example.zarinpal.data.remote.dto.create.CreatePaymentResponse
+import com.example.zarinpal.data.remote.dto.verification.PaymentVerifyRequest
+import com.example.zarinpal.data.remote.dto.verification.VerificationResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android
 import io.ktor.client.features.json.JsonFeature
@@ -14,7 +16,7 @@ interface PaymentService {
 
     suspend fun createPayment(paymentRequest: CreatePaymentRequest): CreatePaymentResponse?
 
-//    suspend fun createPost(postRequest: PostRequest): PostResponse?
+    suspend fun paymentVerify(paymentVerifyRequest: PaymentVerifyRequest): VerificationResponse?
 
     companion object {
         fun create(config: Config): PaymentService {
