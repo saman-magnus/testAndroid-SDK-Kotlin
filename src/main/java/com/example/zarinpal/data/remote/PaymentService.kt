@@ -5,6 +5,8 @@ import com.example.zarinpal.data.remote.dto.create.CreatePaymentRequest
 import com.example.zarinpal.data.remote.dto.create.CreatePaymentResponse
 import com.example.zarinpal.data.remote.dto.inquiry.PaymentInquiryRequest
 import com.example.zarinpal.data.remote.dto.inquiry.PaymentInquiryResponse
+import com.example.zarinpal.data.remote.dto.reverse.PaymentReverseRequest
+import com.example.zarinpal.data.remote.dto.reverse.PaymentReverseResponse
 import com.example.zarinpal.data.remote.dto.unVerified.PaymentUnVerifiedRequest
 import com.example.zarinpal.data.remote.dto.unVerified.PaymentUnVerifiedResponse
 import com.example.zarinpal.data.remote.dto.verification.PaymentVerifyRequest
@@ -25,6 +27,10 @@ interface PaymentService {
     suspend fun paymentInquiry(paymentInquiryRequest: PaymentInquiryRequest): PaymentInquiryResponse?
 
     suspend fun paymentUnVerified(paymentUnVerifiedRequest: PaymentUnVerifiedRequest): PaymentUnVerifiedResponse?
+
+    suspend fun paymentReverse(paymentReverseRequest: PaymentReverseRequest): PaymentReverseResponse?
+
+    suspend fun getTransactions(paymentReverseRequest: PaymentReverseRequest): PaymentReverseResponse?
 
     companion object {
         fun create(config: Config): PaymentService {

@@ -6,6 +6,8 @@ import com.example.zarinpal.data.remote.dto.create.CreatePaymentRequest
 import com.example.zarinpal.data.remote.dto.create.CreatePaymentResponse
 import com.example.zarinpal.data.remote.dto.inquiry.PaymentInquiryRequest
 import com.example.zarinpal.data.remote.dto.inquiry.PaymentInquiryResponse
+import com.example.zarinpal.data.remote.dto.reverse.PaymentReverseRequest
+import com.example.zarinpal.data.remote.dto.reverse.PaymentReverseResponse
 import com.example.zarinpal.data.remote.dto.unVerified.PaymentUnVerifiedRequest
 import com.example.zarinpal.data.remote.dto.unVerified.PaymentUnVerifiedResponse
 import com.example.zarinpal.data.remote.dto.verification.PaymentVerificationResponse
@@ -131,5 +133,32 @@ class PaymentServiceImpl(
             null
         }
 
+    }
+
+    override suspend fun paymentReverse(paymentReverseRequest: PaymentReverseRequest): PaymentReverseResponse? {
+        return try {
+            val route =
+                HttpRoutes.paymentReverse(paymentReverseRequest.sandBox ?: config.sandBox)
+            client.post<PaymentReverseResponse> {
+                url(route)
+                contentType(ContentType.Application.Json)
+                body = paymentReverseRequest.copyWithConfig(config)
+            }
+        } catch (e: RedirectResponseException) {
+            // 3xx - responses
+            println("Error: ${e.response.status.description}")
+            null
+        } catch (e: ClientRequestException) {
+            // 4xx - responses
+            println("Error: ${e.response.status.description}")
+            null
+        } catch (e: ServerResponseException) {
+            // 5xx - responses
+            println("Error: ${e.response.status.description}")
+            null
+        } catch (e: Exception) {
+            println("Error: ${e.message}")
+            null
+        }
     }
 }
