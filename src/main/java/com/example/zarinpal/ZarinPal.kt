@@ -5,8 +5,12 @@ import com.example.zarinpal.data.remote.PaymentService
 import com.example.zarinpal.data.remote.dto.Config
 import com.example.zarinpal.data.remote.dto.create.CreatePaymentRequest
 import com.example.zarinpal.data.remote.dto.create.CreatePaymentResponse
+import com.example.zarinpal.data.remote.dto.inquiry.PaymentInquiryRequest
+import com.example.zarinpal.data.remote.dto.inquiry.PaymentInquiryResponse
+import com.example.zarinpal.data.remote.dto.unVerified.PaymentUnVerifiedRequest
+import com.example.zarinpal.data.remote.dto.unVerified.PaymentUnVerifiedResponse
+import com.example.zarinpal.data.remote.dto.verification.PaymentVerificationResponse
 import com.example.zarinpal.data.remote.dto.verification.PaymentVerifyRequest
-import com.example.zarinpal.data.remote.dto.verification.VerificationResponse
 import kotlinx.coroutines.runBlocking
 
 class ZarinPal(config: Config) {
@@ -16,7 +20,7 @@ class ZarinPal(config: Config) {
 
     fun createPayment(
         paymentRequest: CreatePaymentRequest,
-        redirectUrl: (paymentGatewayUri: String,status:Int) -> Unit
+        redirectUrl: (paymentGatewayUri: String, status: Int) -> Unit
     ): CreatePaymentResponse? {
         return runBlocking {
             val response = service.createPayment(paymentRequest)
@@ -31,9 +35,25 @@ class ZarinPal(config: Config) {
 
     fun paymentVerify(
         paymentVerifyRequest: PaymentVerifyRequest
-    ): VerificationResponse? {
+    ): PaymentVerificationResponse? {
         return runBlocking {
             service.paymentVerify(paymentVerifyRequest)
+        }
+    }
+
+    fun paymentInquiry(
+        paymentInquiryRequest: PaymentInquiryRequest
+    ): PaymentInquiryResponse? {
+        return runBlocking {
+            service.paymentInquiry(paymentInquiryRequest)
+        }
+    }
+
+    fun paymentUnVerified(
+        paymentUnVerifiedRequest: PaymentUnVerifiedRequest = PaymentUnVerifiedRequest()
+    ): PaymentUnVerifiedResponse? {
+        return runBlocking {
+            service.paymentUnVerified(paymentUnVerifiedRequest)
         }
     }
 }

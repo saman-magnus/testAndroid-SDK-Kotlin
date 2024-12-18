@@ -3,6 +3,7 @@
 package com.example.zarinpal.data.remote.dto.create
 
 import androidx.annotation.Keep
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 
@@ -18,7 +19,8 @@ data class CreatePaymentResponse(
 data class CreatePaymentDataResponse(
     val authority: String,
     val message: String,
-    val fee_type: String,
+    @SerialName("fee_type")
+    val feeType: String,
     val fee: Int,
     val code: Int,
 )

@@ -1,27 +1,34 @@
 package com.example.zarinpal.data.remote.dto.verification
 
 import androidx.annotation.Keep
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 
 @Keep
 @Serializable
-data class VerificationResponse(
-    val data: VerificationDataResponse,
+data class PaymentVerificationResponse(
+    val data: PaymentVerificationDataResponse,
     val errors: JsonElement?
 )
 
 @Keep
 @Serializable
-data class VerificationDataResponse(
+data class PaymentVerificationDataResponse(
     val wages: List<String> = emptyList(),
     val code: Int,
     val message: String,
-    val card_hash: String,
-    val card_pan: String,
-    val ref_id: Long?,
-    val fee_type: String,
+    @SerialName("card_hash")
+    val cardHash: String,
+    @SerialName("card_pan")
+    val cardPan: String,
+    @SerialName("ref_id")
+    val refId: Long?,
+    @SerialName("fee_type")
+    val feeType: String,
     val fee: Int,
-    val shaparak_fee: String,
-    val order_id: String? = null
+    @SerialName("shaparak_fee")
+    val shaparakFee: String,
+    @SerialName("order_id")
+    val orderId: String? = null
 )

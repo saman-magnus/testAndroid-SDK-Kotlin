@@ -9,6 +9,8 @@ object HttpRoutes {
 
     private const val PAYMENT = "/pg/v4/payment/request.json"
     private const val PAYMENT_VERIFY = "/pg/v4/payment/verify.json"
+    private const val PAYMENT_INQUIRY = "/pg/v4/payment/inquiry.json"
+    private const val PAYMENT_UN_VERIFIED = "/pg/v4/payment/unVerified.json"
 
     fun createPayment(sandBox: Boolean): String {
         return (if (sandBox) BASE_URL_SANDBOX else BASE_URL) + PAYMENT
@@ -16,6 +18,14 @@ object HttpRoutes {
 
     fun paymentVerify(sandBox: Boolean): String {
         return (if (sandBox) BASE_URL_SANDBOX else BASE_URL) + PAYMENT_VERIFY
+    }
+
+    fun paymentInquiry(sandBox: Boolean): String {
+        return (if (sandBox) BASE_URL_SANDBOX else BASE_URL) + PAYMENT_INQUIRY
+    }
+
+    fun paymentUnVerified(sandBox: Boolean): String {
+        return (if (sandBox) BASE_URL_SANDBOX else BASE_URL) + PAYMENT_UN_VERIFIED
     }
 
     fun getRedirectUrl(authority: String, sandBox: Boolean): String {

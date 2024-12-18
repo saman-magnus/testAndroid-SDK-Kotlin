@@ -9,15 +9,17 @@ import kotlinx.serialization.Serializable
 @Serializable
 @SerialName("CreatePaymentRequest")
 data class CreatePaymentRequest(
-    val merchant_id: String?=null,
+    @SerialName("merchant_id")
+    val merchantId: String? = null,
     val sandBox :Boolean?=null,
     val description: String,
-    val callback_url: String,
+    @SerialName("callback_url")
+    val callbackUrl: String,
     val amount: Int,
 ){
     fun copyWithConfig(config: Config): CreatePaymentRequest {
         return this.copy(
-            merchant_id = this.merchant_id ?: config.merchantId,
+            merchantId = this.merchantId ?: config.merchantId,
             sandBox = this.sandBox ?: config.sandBox
         )
     }
