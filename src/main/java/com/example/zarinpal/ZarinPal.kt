@@ -9,6 +9,8 @@ import com.example.zarinpal.data.remote.dto.inquiry.PaymentInquiryRequest
 import com.example.zarinpal.data.remote.dto.inquiry.PaymentInquiryResponse
 import com.example.zarinpal.data.remote.dto.reverse.PaymentReverseRequest
 import com.example.zarinpal.data.remote.dto.reverse.PaymentReverseResponse
+import com.example.zarinpal.data.remote.dto.transaction.TransactionRequest
+import com.example.zarinpal.data.remote.dto.transaction.TransactionResponse
 import com.example.zarinpal.data.remote.dto.unVerified.PaymentUnVerifiedRequest
 import com.example.zarinpal.data.remote.dto.unVerified.PaymentUnVerifiedResponse
 import com.example.zarinpal.data.remote.dto.verification.PaymentVerificationResponse
@@ -64,6 +66,14 @@ class ZarinPal(config: Config) {
     ): PaymentReverseResponse? {
         return runBlocking {
             service.paymentReverse(paymentReverseRequest)
+        }
+    }
+
+    fun getTransactions(
+        transactionRequest: TransactionRequest
+    ): TransactionResponse? {
+        return runBlocking {
+            service.getTransactions(transactionRequest)
         }
     }
 }

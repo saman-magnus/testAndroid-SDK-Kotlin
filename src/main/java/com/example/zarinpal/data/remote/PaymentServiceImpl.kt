@@ -8,6 +8,9 @@ import com.example.zarinpal.data.remote.dto.inquiry.PaymentInquiryRequest
 import com.example.zarinpal.data.remote.dto.inquiry.PaymentInquiryResponse
 import com.example.zarinpal.data.remote.dto.reverse.PaymentReverseRequest
 import com.example.zarinpal.data.remote.dto.reverse.PaymentReverseResponse
+import com.example.zarinpal.data.remote.dto.transaction.GraphTransactionModel
+import com.example.zarinpal.data.remote.dto.transaction.TransactionRequest
+import com.example.zarinpal.data.remote.dto.transaction.TransactionResponse
 import com.example.zarinpal.data.remote.dto.unVerified.PaymentUnVerifiedRequest
 import com.example.zarinpal.data.remote.dto.unVerified.PaymentUnVerifiedResponse
 import com.example.zarinpal.data.remote.dto.verification.PaymentVerificationResponse
@@ -16,10 +19,9 @@ import io.ktor.client.HttpClient
 import io.ktor.client.features.ClientRequestException
 import io.ktor.client.features.RedirectResponseException
 import io.ktor.client.features.ServerResponseException
+import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.url
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
 
 class PaymentServiceImpl(
     private val client: HttpClient,
@@ -32,7 +34,6 @@ class PaymentServiceImpl(
 
             client.post<CreatePaymentResponse> {
                 url(route)
-                contentType(ContentType.Application.Json)
                 body = paymentRequest.copyWithConfig(config)
             }
         } catch (e: RedirectResponseException) {
@@ -59,7 +60,6 @@ class PaymentServiceImpl(
 
             client.post<PaymentVerificationResponse> {
                 url(route)
-                contentType(ContentType.Application.Json)
                 body = paymentVerifyRequest.copyWithConfig(config)
             }
         } catch (e: RedirectResponseException) {
@@ -86,7 +86,6 @@ class PaymentServiceImpl(
 
             client.post<PaymentInquiryResponse> {
                 url(route)
-                contentType(ContentType.Application.Json)
                 body = paymentInquiryRequest.copyWithConfig(config)
             }
         } catch (e: RedirectResponseException) {
@@ -113,7 +112,6 @@ class PaymentServiceImpl(
                 HttpRoutes.paymentUnVerified(paymentUnVerifiedRequest.sandBox ?: config.sandBox)
             client.post<PaymentUnVerifiedResponse> {
                 url(route)
-                contentType(ContentType.Application.Json)
                 body = paymentUnVerifiedRequest.copyWithConfig(config)
             }
         } catch (e: RedirectResponseException) {
@@ -141,8 +139,37 @@ class PaymentServiceImpl(
                 HttpRoutes.paymentReverse(paymentReverseRequest.sandBox ?: config.sandBox)
             client.post<PaymentReverseResponse> {
                 url(route)
-                contentType(ContentType.Application.Json)
                 body = paymentReverseRequest.copyWithConfig(config)
+            }
+        } catch (e: RedirectResponseException) {
+            // 3xx - responses
+            println("Error: ${e.response.status.description}")
+            null
+        } catch (e: ClientRequestException) {
+            // 4xx - responses
+            println("Error: ${e.response.status.description}")
+            null
+        } catch (e: ServerResponseException) {
+            // 5xx - responses
+            println("Error: ${e.response.status.description}")
+            null
+        } catch (e: Exception) {
+            println("Error: ${e.message}")
+            null
+        }
+    }
+
+    override suspend fun getTransactions(transactionRequest: TransactionRequest): TransactionResponse? {
+        return try {
+            val query = """
+        query Sessions(${'$'}terminal_id: ID!, ${'$'}filter: FilterEnum, ${'$'}id: ID, ${'$'}reference_id: String, ${'$'}rrn: String, ${'$'}card_pan: String, ${'$'}email: String, ${'$'}mobile: CellNumber, ${'$'}description: String, ${'$'}limit: Int, ${'$'}offset: Int) { Session(terminal_id: ${'$'}terminal_id, filter: ${'$'}filter, id: ${'$'}id, reference_id: ${'$'}reference_id, rrn: ${'$'}rrn, card_pan: ${'$'}card_pan, email: ${'$'}email, mobile: ${'$'}mobile, description: ${'$'}description, limit: ${'$'}limit, offset: ${'$'}offset) { id, status, amount, description, created_at } }
+    """.trimIndent()
+
+            val token = transactionRequest.token ?: config.token
+            client.post<TransactionResponse> {
+                url(HttpRoutes.BASE_URL_GRAPH)
+                header("Authorization", "Bearer $token")
+                body = GraphTransactionModel(query = query, variables = transactionRequest)
             }
         } catch (e: RedirectResponseException) {
             // 3xx - responses

@@ -34,7 +34,7 @@ object HttpRoutes {
     }
 
     fun getRedirectUrl(authority: String, sandBox: Boolean): String {
-        if((authority ?: "").isEmpty()) return ""
+        if ((authority ?: "").isEmpty()) return ""
         return (if (sandBox) BASE_URL_SANDBOX else BASE_URL) + START_PAY_URL + authority
     }
 }

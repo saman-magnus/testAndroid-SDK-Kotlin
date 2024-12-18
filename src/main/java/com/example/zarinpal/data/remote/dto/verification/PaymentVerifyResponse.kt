@@ -15,7 +15,7 @@ data class PaymentVerificationResponse(
 @Keep
 @Serializable
 data class PaymentVerificationDataResponse(
-    val wages: List<String> = emptyList(),
+    val wages: List<String>? = emptyList(),
     val code: Int,
     val message: String,
     @SerialName("card_hash")
@@ -28,7 +28,7 @@ data class PaymentVerificationDataResponse(
     val feeType: String,
     val fee: Int,
     @SerialName("shaparak_fee")
-    val shaparakFee: String,
+    val shaparakFee: Int,
     @SerialName("order_id")
     val orderId: String? = null
 )
