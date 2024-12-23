@@ -1,27 +1,29 @@
 package com.example.zarinpal.data.remote.dto.refund
 
-import androidx.annotation.Keep
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-@Keep
 @Serializable
-data class TransactionResponse(
-    @SerialName("data") val data: Data
+data class PaymentRefundResponseModel(
+    val data: PaymentRefundDataModel
 )
 
-@Keep
 @Serializable
-data class Data(
-    @SerialName("Session") val session: List<Session>
+data class PaymentRefundDataModel(
+    val resource: PaymentRefundResponse
 )
 
-@Keep
 @Serializable
-data class Session(
-    @SerialName("id") val id: String,
-    @SerialName("status") val status: String,
-    @SerialName("amount") val amount: Long,
-    @SerialName("description") val description: String,
-    @SerialName("created_at") val createdAt: String
+data class PaymentRefundResponse(
+    @SerialName("terminal_id") val terminalId: String,
+    val id: String,
+    val amount: Int,
+    val timeline: PaymentRefundTimeline
+)
+
+@Serializable
+data class PaymentRefundTimeline(
+    @SerialName("refund_amount") val refundAmount: Int,
+    @SerialName("refund_time") val refundTime: String,
+    @SerialName("refund_status") val refundStatus: String
 )

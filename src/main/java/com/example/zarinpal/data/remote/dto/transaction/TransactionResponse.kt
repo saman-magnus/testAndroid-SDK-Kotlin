@@ -7,13 +7,13 @@ import kotlinx.serialization.Serializable
 @Keep
 @Serializable
 data class TransactionResponse(
-    @SerialName("data") val data: Data
+    @SerialName("data") val data: Data?
 )
 
 @Keep
 @Serializable
 data class Data(
-    @SerialName("Session") val session: List<Session>
+    @SerialName("Session") val session: List<Session>?
 )
 
 @Keep

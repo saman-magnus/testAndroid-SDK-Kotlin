@@ -7,10 +7,11 @@ import kotlinx.serialization.Serializable
 @Keep
 @Serializable
 data class PaymentRefundRequest(
-    @SerialName("terminal_id")
-    val terminalId: String,
-    val filter: String,
-    val limit: Int,
-    val offset: Int,
+    @SerialName("session_id")
+    val sessionId: String,
+    val description: String,
+    val method: String,
+    val reason: String,
+    val amount: Int,
     val token: String? = null,
 )
