@@ -36,11 +36,21 @@ import io.ktor.client.statement.readText
 import org.json.JSONArray
 import org.json.JSONObject
 
+/**
+ * This class handles the communication with the Payment API.
+ * It provides methods for creating, verifying, inquiring, refunding, and reversing payments,
+ * as well as fetching transaction details and handling unverified payments.
+ */
 class PaymentServiceImpl(
     private val client: HttpClient,
     private val config: Config
 ) : PaymentService {
 
+    /**
+     * Creates a new payment.
+     * @param paymentRequest The request object containing payment details.
+     * @return A [CreatePaymentDataResponse] object containing the response data, or null if the request fails.
+     */
     override suspend fun createPayment(paymentRequest: CreatePaymentRequest): CreatePaymentDataResponse? {
         return handleRequestWithErrorHandling {
             val route = HttpRoutes.createPayment(paymentRequest.sandBox ?: config.sandBox)
@@ -53,6 +63,11 @@ class PaymentServiceImpl(
         }
     }
 
+    /**
+     * Verifies a payment after it has been made.
+     * @param paymentVerifyRequest The request object containing payment verification details.
+     * @return A [PaymentVerificationDataResponse] object containing the verification result, or null if the request fails.
+     */
     override suspend fun paymentVerify(paymentVerifyRequest: PaymentVerifyRequest): PaymentVerificationDataResponse? {
         return handleRequestWithErrorHandling {
             val route = HttpRoutes.paymentVerify(paymentVerifyRequest.sandBox ?: config.sandBox)
@@ -65,6 +80,11 @@ class PaymentServiceImpl(
         }
     }
 
+    /**
+     * Inquires about the status of a payment.
+     * @param paymentInquiryRequest The request object containing payment inquiry details.
+     * @return A [PaymentInquiryDataResponse] object containing the inquiry result, or null if the request fails.
+     */
     override suspend fun paymentInquiry(paymentInquiryRequest: PaymentInquiryRequest): PaymentInquiryDataResponse? {
         return handleRequestWithErrorHandling {
             val route = HttpRoutes.paymentInquiry(paymentInquiryRequest.sandBox ?: config.sandBox)
@@ -77,6 +97,11 @@ class PaymentServiceImpl(
         }
     }
 
+    /**
+     * Retrieves unverified payments.
+     * @param paymentUnVerifiedRequest The request object containing unverified payment details.
+     * @return A [PaymentUnVerifiedDataResponse] object containing unverified payments, or null if the request fails.
+     */
     override suspend fun paymentUnVerified(paymentUnVerifiedRequest: PaymentUnVerifiedRequest): PaymentUnVerifiedDataResponse? {
         return handleRequestWithErrorHandling {
             val route =
@@ -90,6 +115,11 @@ class PaymentServiceImpl(
 
     }
 
+    /**
+     * Reverses a payment.
+     * @param paymentReverseRequest The request object containing payment reversal details.
+     * @return A [PaymentReverseDataResponse] object containing the reversal result, or null if the request fails.
+     */
     override suspend fun paymentReverse(paymentReverseRequest: PaymentReverseRequest): PaymentReverseDataResponse? {
         return handleRequestWithErrorHandling {
             val route =
@@ -102,6 +132,11 @@ class PaymentServiceImpl(
         }
     }
 
+    /**
+     * Retrieves a list of transactions.
+     * @param transactionRequest The request object containing transaction filter details.
+     * @return A list of [Session] objects representing the transactions, or null if the request fails.
+     */
     override suspend fun getTransactions(transactionRequest: TransactionRequest): List<Session>? {
         return handleRequestWithErrorHandling {
             val query = """
@@ -118,6 +153,11 @@ class PaymentServiceImpl(
         }
     }
 
+    /**
+     * Refunds a payment.
+     * @param paymentRefundRequest The request object containing refund details.
+     * @return A [PaymentRefundResponse] object containing the refund result, or null if the request fails.
+     */
     override suspend fun paymentRefund(paymentRefundRequest: PaymentRefundRequest): PaymentRefundResponse? {
         return handleRequestWithErrorHandling {
             val query = """
@@ -135,6 +175,11 @@ class PaymentServiceImpl(
 
     }
 
+    /**
+     * Handles errors and retries requests if necessary.
+     * @param request A suspending function that performs the request.
+     * @return The result of the request, or throws an exception if an error occurs.
+     */
     private suspend fun <T> handleRequestWithErrorHandling(request: suspend () -> T): T {
         return try {
             request()
@@ -155,8 +200,13 @@ class PaymentServiceImpl(
         }
     }
 
+    /**
+     * Processes error responses from the API.
+     * @param jsonString The JSON string containing the error response.
+     * @return A readable error message, or null if the error cannot be processed.
+     */
     private fun processErrorResponse(jsonString: String?): String? {
-
+        // Implementation of error response processing
         if (jsonString == null) return null
 
         try {

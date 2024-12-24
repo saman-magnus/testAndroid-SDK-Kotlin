@@ -6,6 +6,15 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
+/**
+ * Represents the request data required to fetch transactions.
+ *
+ * @property terminalId The unique identifier for the terminal from which transactions are being requested.
+ * @property filter A filter string to apply to the transactions (e.g., "completed", "pending").
+ * @property limit The maximum number of transactions to return.
+ * @property offset The starting point for fetching transactions (used for pagination).
+ * @property token A token used for additional security (nullable).
+ */
 @Keep
 @Serializable
 data class TransactionRequest(

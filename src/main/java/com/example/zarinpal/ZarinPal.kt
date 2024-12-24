@@ -19,11 +19,24 @@ import com.example.zarinpal.data.remote.dto.verification.PaymentVerificationData
 import com.example.zarinpal.data.remote.dto.verification.PaymentVerifyRequest
 import kotlinx.coroutines.runBlocking
 
+/**
+ * ZarinPal class handles all interactions with the ZarinPal API.
+ * Provides methods for creating payments, verifying payments, refunds, reversals, and more.
+ */
 class ZarinPal(config: Config) {
 
+    // Instance of PaymentService used for API calls
     private val service = PaymentService.create(config)
+
+    // Configuration object containing sandbox mode and other settings
     private val config = config
 
+    /**
+     * Creates a new payment and returns the response.
+     * @param paymentRequest Request data for creating the payment.
+     * @param redirectUrl Callback function to handle the payment gateway URL and status.
+     * @return [CreatePaymentDataResponse] containing details of the created payment.
+     */
     fun createPayment(
         paymentRequest: CreatePaymentRequest,
         redirectUrl: (paymentGatewayUri: String, status: Int) -> Unit
@@ -39,6 +52,11 @@ class ZarinPal(config: Config) {
         }
     }
 
+    /**
+     * Verifies a payment using the authority code.
+     * @param paymentVerifyRequest Request data for verifying the payment.
+     * @return [PaymentVerificationDataResponse] containing verification details.
+     */
     fun paymentVerify(
         paymentVerifyRequest: PaymentVerifyRequest
     ): PaymentVerificationDataResponse? {
@@ -47,6 +65,11 @@ class ZarinPal(config: Config) {
         }
     }
 
+    /**
+     * Inquires about a payment status.
+     * @param paymentInquiryRequest Request data for the payment inquiry.
+     * @return [PaymentInquiryDataResponse] containing inquiry details.
+     */
     fun paymentInquiry(
         paymentInquiryRequest: PaymentInquiryRequest
     ): PaymentInquiryDataResponse? {
@@ -55,6 +78,11 @@ class ZarinPal(config: Config) {
         }
     }
 
+    /**
+     * Retrieves unverified payments.
+     * @param paymentUnVerifiedRequest Optional request data for retrieving unverified payments.
+     * @return [PaymentUnVerifiedDataResponse] containing unverified payment details.
+     */
     fun paymentUnVerified(
         paymentUnVerifiedRequest: PaymentUnVerifiedRequest = PaymentUnVerifiedRequest()
     ): PaymentUnVerifiedDataResponse? {
@@ -63,6 +91,11 @@ class ZarinPal(config: Config) {
         }
     }
 
+    /**
+     * Retrieves unverified payments.
+     * @param paymentUnVerifiedRequest Optional request data for retrieving unverified payments.
+     * @return [PaymentUnVerifiedDataResponse] containing unverified payment details.
+     */
     fun paymentReverse(
         paymentReverseRequest: PaymentReverseRequest
     ): PaymentReverseDataResponse? {
@@ -71,6 +104,11 @@ class ZarinPal(config: Config) {
         }
     }
 
+    /**
+     * Retrieves transaction history.
+     * @param transactionRequest Request data for fetching transactions.
+     * @return A list of [Session] objects containing transaction details.
+     */
     fun getTransactions(
         transactionRequest: TransactionRequest
     ): List<Session>? {
@@ -79,6 +117,11 @@ class ZarinPal(config: Config) {
         }
     }
 
+    /**
+     * Processes a payment refund.
+     * @param paymentRefundRequest Request data for refunding the payment.
+     * @return [PaymentRefundResponse] containing refund details.
+     */
     fun paymentRefund(
         paymentRefundRequest: PaymentRefundRequest
     ): PaymentRefundResponse? {

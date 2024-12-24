@@ -5,6 +5,12 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 
+/**
+ * Represents the response data returned when verifying a payment.
+ *
+ * @property data Contains the details of the payment verification response.
+ * @property errors If present, contains any errors returned by the payment gateway.
+ */
 @Keep
 @Serializable
 data class PaymentVerificationResponse(
@@ -12,6 +18,20 @@ data class PaymentVerificationResponse(
     val errors: JsonElement?
 )
 
+/**
+ * Contains the data returned from the payment verification request.
+ *
+ * @property wages A list of wages associated with the payment (nullable).
+ * @property code A numeric code indicating the result of the request.
+ * @property message A descriptive message explaining the result or error.
+ * @property cardHash The hash of the card used for the payment.
+ * @property cardPan The primary account number (PAN) of the card used for the payment.
+ * @property refId The reference ID for the transaction (nullable).
+ * @property feeType The type of fee applied to the payment.
+ * @property fee The amount of the fee applied to the payment.
+ * @property shaparakFee The fee imposed by the Shaparak payment system.
+ * @property orderId The unique identifier for the order associated with the payment (nullable).
+ */
 @Keep
 @Serializable
 data class PaymentVerificationDataResponse(

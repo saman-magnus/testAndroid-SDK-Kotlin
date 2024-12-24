@@ -26,24 +26,80 @@ import io.ktor.client.request.header
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import kotlinx.serialization.json.Json
+import android.os.Build
+import androidx.core.os.BuildCompat
+import androidx.core.os.BundleCompat
 
+
+/**
+ * PaymentService interface provides functions to interact with the ZarinPal payment system.
+ * Each function corresponds to a specific endpoint in the ZarinPal API.
+ */
 interface PaymentService {
 
+    /**
+     * Creates a payment request.
+     *
+     * @param paymentRequest The payment request details.
+     * @return A response containing the payment data or null if the request fails.
+     */
     suspend fun createPayment(paymentRequest: CreatePaymentRequest): CreatePaymentDataResponse?
 
+    /**
+     * Creates a payment request.
+     *
+     * @param paymentRequest The payment request details.
+     * @return A response containing the payment data or null if the request fails.
+     */
     suspend fun paymentVerify(paymentVerifyRequest: PaymentVerifyRequest): PaymentVerificationDataResponse?
 
+    /**
+     * Inquires about a payment.
+     *
+     * @param paymentInquiryRequest The request containing the payment inquiry data.
+     * @return A response containing the payment inquiry data or null if the inquiry fails.
+     */
     suspend fun paymentInquiry(paymentInquiryRequest: PaymentInquiryRequest): PaymentInquiryDataResponse?
 
+    /**
+     * Retrieves unverified payments.
+     *
+     * @param paymentUnVerifiedRequest The request containing the unverified payment data.
+     * @return A response containing the unverified payment data or null if the request fails.
+     */
     suspend fun paymentUnVerified(paymentUnVerifiedRequest: PaymentUnVerifiedRequest): PaymentUnVerifiedDataResponse?
 
+    /**
+     * Reverses a payment.
+     *
+     * @param paymentReverseRequest The request containing the payment reversal data.
+     * @return A response containing the payment reversal data or null if the reversal fails.
+     */
     suspend fun paymentReverse(paymentReverseRequest: PaymentReverseRequest): PaymentReverseDataResponse?
 
+    /**
+     * Retrieves a list of transactions.
+     *
+     * @param transactionRequest The request containing the transaction data.
+     * @return A list of transactions or null if the request fails.
+     */
     suspend fun getTransactions(transactionRequest: TransactionRequest): List<Session>?
 
+    /**
+     * Processes a payment refund.
+     *
+     * @param paymentRefundRequest The request containing the payment refund data.
+     * @return A response containing the payment refund data or null if the refund fails.
+     */
     suspend fun paymentRefund(paymentRefundRequest: PaymentRefundRequest): PaymentRefundResponse?
 
     companion object {
+        /**
+         * Creates an instance of PaymentService with the provided configuration.
+         *
+         * @param config The configuration for the service.
+         * @return A new instance of PaymentService.
+         */
         fun create(config: Config): PaymentService {
             return PaymentServiceImpl(
                 config = config,
