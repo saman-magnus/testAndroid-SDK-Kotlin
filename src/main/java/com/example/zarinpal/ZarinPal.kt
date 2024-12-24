@@ -17,6 +17,7 @@ import com.example.zarinpal.data.remote.dto.unVerified.PaymentUnVerifiedDataResp
 import com.example.zarinpal.data.remote.dto.unVerified.PaymentUnVerifiedRequest
 import com.example.zarinpal.data.remote.dto.verification.PaymentVerificationDataResponse
 import com.example.zarinpal.data.remote.dto.verification.PaymentVerifyRequest
+import com.example.zarinpal.utils.Validator
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -41,6 +42,11 @@ class ZarinPal(config: Config) {
         paymentRequest: CreatePaymentRequest,
         redirectUrl: (paymentGatewayUri: String, status: Int) -> Unit
     ): CreatePaymentDataResponse? {
+
+        Validator.validateMerchantId(paymentRequest.merchantId?:config.merchantId)
+        Validator.validateCallbackUrl(paymentRequest.callbackUrl)
+        Validator.validateAmount(paymentRequest.amount)
+
         return runBlocking {
             val response = service.createPayment(paymentRequest)
             val paymentGatewayUri = HttpRoutes.getRedirectUrl(
@@ -60,6 +66,11 @@ class ZarinPal(config: Config) {
     fun paymentVerify(
         paymentVerifyRequest: PaymentVerifyRequest
     ): PaymentVerificationDataResponse? {
+
+        Validator.validateMerchantId(paymentVerifyRequest.merchantId?:config.merchantId)
+        Validator.validateAuthority(paymentVerifyRequest.authority)
+        Validator.validateAmount(paymentVerifyRequest.amount)
+
         return runBlocking {
             service.paymentVerify(paymentVerifyRequest)
         }
@@ -73,6 +84,10 @@ class ZarinPal(config: Config) {
     fun paymentInquiry(
         paymentInquiryRequest: PaymentInquiryRequest
     ): PaymentInquiryDataResponse? {
+
+        Validator.validateMerchantId(paymentInquiryRequest.merchantId?:config.merchantId)
+        Validator.validateAuthority(paymentInquiryRequest.authority)
+
         return runBlocking {
             service.paymentInquiry(paymentInquiryRequest)
         }
@@ -86,6 +101,9 @@ class ZarinPal(config: Config) {
     fun paymentUnVerified(
         paymentUnVerifiedRequest: PaymentUnVerifiedRequest = PaymentUnVerifiedRequest()
     ): PaymentUnVerifiedDataResponse? {
+
+        Validator.validateMerchantId(paymentUnVerifiedRequest.merchantId?:config.merchantId)
+
         return runBlocking {
             service.paymentUnVerified(paymentUnVerifiedRequest)
         }
@@ -99,6 +117,10 @@ class ZarinPal(config: Config) {
     fun paymentReverse(
         paymentReverseRequest: PaymentReverseRequest
     ): PaymentReverseDataResponse? {
+
+        Validator.validateMerchantId(paymentReverseRequest.merchantId?:config.merchantId)
+        Validator.validateAuthority(paymentReverseRequest.authority)
+
         return runBlocking {
             service.paymentReverse(paymentReverseRequest)
         }
@@ -112,6 +134,12 @@ class ZarinPal(config: Config) {
     fun getTransactions(
         transactionRequest: TransactionRequest
     ): List<Session>? {
+
+        Validator.validateTerminalId(transactionRequest.terminalId)
+        Validator.validateFilter(transactionRequest.filter)
+        Validator.validateLimit(transactionRequest.limit)
+        Validator.validateOffset(transactionRequest.offset)
+
         return runBlocking {
             service.getTransactions(transactionRequest)
         }
@@ -125,6 +153,12 @@ class ZarinPal(config: Config) {
     fun paymentRefund(
         paymentRefundRequest: PaymentRefundRequest
     ): PaymentRefundResponse? {
+
+        Validator.validateSessionId(paymentRefundRequest.sessionId)
+        Validator.validateMethod(paymentRefundRequest.method)
+        Validator.validateReason(paymentRefundRequest.reason)
+        Validator.validateAmount(paymentRefundRequest.amount, minAmount = 20_000)
+
         return runBlocking {
             service.paymentRefund(paymentRefundRequest)
         }
