@@ -150,19 +150,6 @@ class Validator {
         }
 
         /**
-         * Validates the filter value to ensure it is one of the allowed predefined options.
-         *
-         * @param filter The filter value to validate.
-         * @throws IllegalArgumentException if the filter value is invalid.
-         */
-        fun validateFilter(filter: String) {
-            val validFilters = listOf("ALL","PAID", "VERIFIED", "TRASH", "ACTIVE", "REFUNDED")
-            if (filter !in validFilters) {
-                throw IllegalArgumentException("Invalid filter value.")
-            }
-        }
-
-        /**
          * Validates the limit value to ensure it is a positive integer.
          *
          * @param limit The limit value to validate.
@@ -196,32 +183,6 @@ class Validator {
             val pattern = "^[0-9]{16}$".toRegex()
             if (cardPan != null && !pattern.matches(cardPan)) {
                 throw IllegalArgumentException("Invalid card PAN format. It should be a 16-digit number.")
-            }
-        }
-
-        /**
-         * Validates the method to ensure it is one of the allowed options ('PAYA' or 'CARD').
-         *
-         * @param method The method to validate.
-         * @throws IllegalArgumentException if the method is invalid.
-         */
-        fun validateMethod(method: String) {
-            val validMethods = listOf("PAYA", "CARD")
-            if (method !in validMethods) {
-                throw IllegalArgumentException("Invalid method. Allowed values are 'PAYA' or 'CARD'.")
-            }
-        }
-
-        /**
-         * Validates the reason to ensure it is one of the allowed predefined options.
-         *
-         * @param reason The reason to validate.
-         * @throws IllegalArgumentException if the reason is invalid.
-         */
-        fun validateReason(reason: String) {
-            val validReasons = listOf("CUSTOMER_REQUEST", "DUPLICATE_TRANSACTION", "SUSPICIOUS_TRANSACTION", "OTHER")
-            if (reason !in validReasons) {
-                throw IllegalArgumentException("Invalid reason. Allowed values are 'CUSTOMER_REQUEST', 'DUPLICATE_TRANSACTION', 'SUSPICIOUS_TRANSACTION', or 'OTHER'.")
             }
         }
     }

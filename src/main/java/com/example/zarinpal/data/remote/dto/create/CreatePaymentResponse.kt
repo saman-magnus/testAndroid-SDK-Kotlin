@@ -35,8 +35,7 @@ data class CreatePaymentDataResponse(
     val authority: String,
     val message: String,
     @SerialName("fee_type")
-    val feeType: String,
+    val feeType: String?,
     val fee: Int,
     val code: Int,
 )
-

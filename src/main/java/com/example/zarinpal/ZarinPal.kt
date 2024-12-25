@@ -136,7 +136,6 @@ class ZarinPal(config: Config) {
     ): List<Session>? {
 
         Validator.validateTerminalId(transactionRequest.terminalId)
-        Validator.validateFilter(transactionRequest.filter)
         Validator.validateLimit(transactionRequest.limit)
         Validator.validateOffset(transactionRequest.offset)
 
@@ -155,8 +154,6 @@ class ZarinPal(config: Config) {
     ): PaymentRefundResponse? {
 
         Validator.validateSessionId(paymentRefundRequest.sessionId)
-        Validator.validateMethod(paymentRefundRequest.method)
-        Validator.validateReason(paymentRefundRequest.reason)
         Validator.validateAmount(paymentRefundRequest.amount, minAmount = 20_000)
 
         return runBlocking {

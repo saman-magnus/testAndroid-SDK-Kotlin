@@ -39,7 +39,7 @@ data class Data(
 @Serializable
 data class Session(
     @SerialName("id") val id: String,
-    @SerialName("status") val status: String,
+    @SerialName("status") val status: String?,
     @SerialName("amount") val amount: Long,
     @SerialName("description") val description: String,
     @SerialName("created_at") val createdAt: String

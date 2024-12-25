@@ -45,7 +45,7 @@ data class PaymentVerificationDataResponse(
     @SerialName("ref_id")
     val refId: Long?,
     @SerialName("fee_type")
-    val feeType: String,
+    val feeType: String?,
     val fee: Int,
     @SerialName("shaparak_fee")
     val shaparakFee: Int,
