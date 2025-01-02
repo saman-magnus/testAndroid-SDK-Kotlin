@@ -19,12 +19,19 @@ import kotlinx.serialization.Serializable
 data class CreatePaymentRequest(
     @SerialName("merchant_id")
     val merchantId: String? = null,
-    val sandBox :Boolean?=null,
+    val sandBox: Boolean? = null,
     val description: String,
     @SerialName("callback_url")
     val callbackUrl: String,
     val amount: Int,
-){
+    val mobile: String?=null,
+    val email: String?=null,
+    @SerialName("referrer_id")
+    val referrerId: String?=null,
+    val currency: String?=null,
+    val cardPan: String?=null,
+    val wages: List<WagesPaymentRequest>?=null,
+) {
     /**
      * Creates a copy of the request with the merchantId and sandBox values
      * replaced by the ones from the provided [Config] if they are null.
@@ -36,3 +43,12 @@ data class CreatePaymentRequest(
         )
     }
 }
+
+
+@Keep
+@Serializable
+data class WagesPaymentRequest(
+    val iban: String,
+    val amount: Int,
+    val description: String,
+)
