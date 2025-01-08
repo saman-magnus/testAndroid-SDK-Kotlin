@@ -18,6 +18,9 @@ import com.example.zarinpal.data.remote.dto.unVerified.PaymentUnVerifiedRequest
 import com.example.zarinpal.data.remote.dto.verification.PaymentVerificationDataResponse
 import com.example.zarinpal.data.remote.dto.verification.PaymentVerifyRequest
 import com.example.zarinpal.utils.Validator
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -51,13 +54,15 @@ class ZarinPal(config: Config) {
         Validator.validateCardPan(paymentRequest.cardPan)
 
         return runBlocking {
-            val response = service.createPayment(paymentRequest)
+            val response = async {
+                service.createPayment(paymentRequest)
+            }
             val paymentGatewayUri = HttpRoutes.getRedirectUrl(
                 sandBox = paymentRequest.sandBox ?: config.sandBox,
-                authority = response?.authority ?: ""
+                authority = response.await()?.authority ?: ""
             )
-            redirectUrl(paymentGatewayUri, response?.code ?: 0)
-            response
+            redirectUrl(paymentGatewayUri, response.await()?.code ?: 0)
+            response.await()
         }
     }
 
@@ -75,7 +80,7 @@ class ZarinPal(config: Config) {
         Validator.validateAmount(paymentVerifyRequest.amount)
 
         return runBlocking {
-            service.paymentVerify(paymentVerifyRequest)
+            async { service.paymentVerify(paymentVerifyRequest) }.await()
         }
     }
 
@@ -92,7 +97,7 @@ class ZarinPal(config: Config) {
         Validator.validateAuthority(paymentInquiryRequest.authority)
 
         return runBlocking {
-            service.paymentInquiry(paymentInquiryRequest)
+            async { service.paymentInquiry(paymentInquiryRequest) }.await()
         }
     }
 
@@ -108,7 +113,7 @@ class ZarinPal(config: Config) {
         Validator.validateMerchantId(paymentUnVerifiedRequest.merchantId?:config.merchantId)
 
         return runBlocking {
-            service.paymentUnVerified(paymentUnVerifiedRequest)
+            async { service.paymentUnVerified(paymentUnVerifiedRequest) }.await()
         }
     }
 
@@ -125,7 +130,7 @@ class ZarinPal(config: Config) {
         Validator.validateAuthority(paymentReverseRequest.authority)
 
         return runBlocking {
-            service.paymentReverse(paymentReverseRequest)
+            async { service.paymentReverse(paymentReverseRequest) }.await()
         }
     }
 
@@ -143,7 +148,7 @@ class ZarinPal(config: Config) {
         Validator.validateOffset(transactionRequest.offset)
 
         return runBlocking {
-            service.getTransactions(transactionRequest)
+            async { service.getTransactions(transactionRequest) }.await()
         }
     }
 
@@ -160,7 +165,7 @@ class ZarinPal(config: Config) {
         Validator.validateAmount(paymentRefundRequest.amount, minAmount = 20_000)
 
         return runBlocking {
-            service.paymentRefund(paymentRefundRequest)
+            async { service.paymentRefund(paymentRefundRequest) }.await()
         }
     }
 }
