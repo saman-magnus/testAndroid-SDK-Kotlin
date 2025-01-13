@@ -39,3 +39,13 @@
 -keepclassmembers public class **$$serializer {
     private ** descriptor;
 }
+-keep class com.example.zarinpal.** { *; }
+-keep class io.ktor.** { *; }
+-keepnames class kotlinx.serialization.** { *; }
+-keep class kotlinx.serialization.** { *; }
+-keep class kotlinx.serialization.json.** { *; }
+-keep class kotlinx.serialization.json.Json { *; }
+-keepattributes Signature
+
+-keep class com.example.zarinpal.** { *; }
+-keep class kotlinx.serialization.** { *; }
