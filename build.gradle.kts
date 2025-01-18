@@ -1,3 +1,5 @@
+import org.gradle.internal.impldep.org.eclipse.jgit.transport.CredentialItem.Username
+
 plugins {
     kotlin("plugin.serialization") version "2.0.0"
     id("com.android.library") version "8.8.0"
@@ -51,12 +53,12 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "com.zarinpal"
             artifactId = "zarinPal-library"
-            version = "1.0.0"
+            version = "1.0.1"
 
             afterEvaluate {
                 from(components["release"])
             }
-            artifact("$buildDir/outputs/aar/zarinPal-library-release.aar")
+//            artifact("build/outputs/aar/zarinPal-release.aar")
 
             pom {
                 dependencies {
@@ -67,17 +69,25 @@ publishing {
                     implementation("ch.qos.logback:logback-classic:1.2.3")
                     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
                 }
+
             }
         }
     }
 
     repositories {
         maven {
-            url = uri(layout.buildDirectory.dir("repo"))
+            url = uri("https://maven.pkg.github.com/alirezabashi98/zarinpal-sdk")
+            credentials {
+                credentials.username = "alirezabashi98@gmail.com"
+                credentials.password = "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"
+//                username = System.getenv("GITHUB_USER")
+//                password = System.getenv("GITHUB_TOKEN")
+                println("username : ${System.getenv("GITHUB_USER")}")
+                println("token : ${System.getenv("GITHUB_TOKEN")}")
+            }
         }
     }
 }
-
 dependencies {
     api("io.ktor:ktor-client-core:$ktor_version") {
         isTransitive = true
