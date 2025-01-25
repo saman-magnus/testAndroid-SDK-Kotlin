@@ -51,9 +51,9 @@ android {
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            groupId = "com.zarinpal"
-            artifactId = "zarinPal-library"
-            version = "1.0.1"
+            groupId = "com.example"
+            artifactId = "zarinpal"
+            version = "1.0.0"
 
             afterEvaluate {
                 from(components["release"])
