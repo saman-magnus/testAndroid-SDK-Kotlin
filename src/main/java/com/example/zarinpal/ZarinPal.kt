@@ -18,10 +18,9 @@ import com.example.zarinpal.data.remote.dto.unVerified.PaymentUnVerifiedRequest
 import com.example.zarinpal.data.remote.dto.verification.PaymentVerificationDataResponse
 import com.example.zarinpal.data.remote.dto.verification.PaymentVerifyRequest
 import com.example.zarinpal.utils.Validator
-import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 /**
  * ZarinPal class handles all interactions with the ZarinPal API.
@@ -41,29 +40,35 @@ class ZarinPal(config: Config) {
      * @param redirectUrl Callback function to handle the payment gateway URL and status.
      * @return [CreatePaymentDataResponse] containing details of the created payment.
      */
-    fun createPayment(
+    suspend fun createPayment(
         paymentRequest: CreatePaymentRequest,
         redirectUrl: (paymentGatewayUri: String, status: Int) -> Unit
     ): CreatePaymentDataResponse? {
-
-        Validator.validateMerchantId(paymentRequest.merchantId?:config.merchantId)
+        Validator.validateMerchantId(paymentRequest.merchantId ?: config.merchantId)
         Validator.validateCallbackUrl(paymentRequest.callbackUrl)
         Validator.validateAmount(paymentRequest.amount)
         Validator.validateMobile(paymentRequest.mobile)
         Validator.validateEmail(paymentRequest.email)
         Validator.validateCardPan(paymentRequest.cardPan)
 
-        return runBlocking {
-            val response = async {
+        val response = withContext(Dispatchers.IO) {
+            val paymentResponse = async {
                 service.createPayment(paymentRequest)
             }
+
             val paymentGatewayUri = HttpRoutes.getRedirectUrl(
                 sandBox = paymentRequest.sandBox ?: config.sandBox,
-                authority = response.await()?.authority ?: ""
+                authority = paymentResponse.await()?.authority ?: ""
             )
-            redirectUrl(paymentGatewayUri, response.await()?.code ?: 0)
-            response.await()
+
+            withContext(Dispatchers.Main) {
+                redirectUrl(paymentGatewayUri, paymentResponse.await()?.code ?: 0)
+            }
+
+            paymentResponse.await()
         }
+
+        return response
     }
 
     /**
@@ -71,16 +76,15 @@ class ZarinPal(config: Config) {
      * @param paymentVerifyRequest Request data for verifying the payment.
      * @return [PaymentVerificationDataResponse] containing verification details.
      */
-    fun paymentVerify(
+    suspend fun paymentVerify(
         paymentVerifyRequest: PaymentVerifyRequest
     ): PaymentVerificationDataResponse? {
-
-        Validator.validateMerchantId(paymentVerifyRequest.merchantId?:config.merchantId)
+        Validator.validateMerchantId(paymentVerifyRequest.merchantId ?: config.merchantId)
         Validator.validateAuthority(paymentVerifyRequest.authority)
         Validator.validateAmount(paymentVerifyRequest.amount)
 
-        return runBlocking {
-            async { service.paymentVerify(paymentVerifyRequest) }.await()
+        return withContext(Dispatchers.IO) {
+            service.paymentVerify(paymentVerifyRequest)
         }
     }
 
@@ -89,31 +93,30 @@ class ZarinPal(config: Config) {
      * @param paymentInquiryRequest Request data for the payment inquiry.
      * @return [PaymentInquiryDataResponse] containing inquiry details.
      */
-    fun paymentInquiry(
+    suspend fun paymentInquiry(
         paymentInquiryRequest: PaymentInquiryRequest
     ): PaymentInquiryDataResponse? {
-
-        Validator.validateMerchantId(paymentInquiryRequest.merchantId?:config.merchantId)
+        Validator.validateMerchantId(paymentInquiryRequest.merchantId ?: config.merchantId)
         Validator.validateAuthority(paymentInquiryRequest.authority)
 
-        return runBlocking {
-            async { service.paymentInquiry(paymentInquiryRequest) }.await()
+        return withContext(Dispatchers.IO) {
+            service.paymentInquiry(paymentInquiryRequest)
         }
     }
+
 
     /**
      * Retrieves unverified payments.
      * @param paymentUnVerifiedRequest Optional request data for retrieving unverified payments.
      * @return [PaymentUnVerifiedDataResponse] containing unverified payment details.
      */
-    fun paymentUnVerified(
+    suspend fun paymentUnVerified(
         paymentUnVerifiedRequest: PaymentUnVerifiedRequest = PaymentUnVerifiedRequest()
     ): PaymentUnVerifiedDataResponse? {
+        Validator.validateMerchantId(paymentUnVerifiedRequest.merchantId ?: config.merchantId)
 
-        Validator.validateMerchantId(paymentUnVerifiedRequest.merchantId?:config.merchantId)
-
-        return runBlocking {
-            async { service.paymentUnVerified(paymentUnVerifiedRequest) }.await()
+        return withContext(Dispatchers.IO) {
+            service.paymentUnVerified(paymentUnVerifiedRequest)
         }
     }
 
@@ -122,15 +125,14 @@ class ZarinPal(config: Config) {
      * @param paymentUnVerifiedRequest Optional request data for retrieving unverified payments.
      * @return [PaymentUnVerifiedDataResponse] containing unverified payment details.
      */
-    fun paymentReverse(
+    suspend fun paymentReverse(
         paymentReverseRequest: PaymentReverseRequest
     ): PaymentReverseDataResponse? {
-
-        Validator.validateMerchantId(paymentReverseRequest.merchantId?:config.merchantId)
+        Validator.validateMerchantId(paymentReverseRequest.merchantId ?: config.merchantId)
         Validator.validateAuthority(paymentReverseRequest.authority)
 
-        return runBlocking {
-            async { service.paymentReverse(paymentReverseRequest) }.await()
+        return withContext(Dispatchers.IO) {
+            service.paymentReverse(paymentReverseRequest)
         }
     }
 
@@ -139,16 +141,15 @@ class ZarinPal(config: Config) {
      * @param transactionRequest Request data for fetching transactions.
      * @return A list of [Session] objects containing transaction details.
      */
-    fun getTransactions(
+    suspend fun getTransactions(
         transactionRequest: TransactionRequest
     ): List<Session>? {
-
         Validator.validateTerminalId(transactionRequest.terminalId)
         Validator.validateLimit(transactionRequest.limit)
         Validator.validateOffset(transactionRequest.offset)
 
-        return runBlocking {
-            async { service.getTransactions(transactionRequest) }.await()
+        return withContext(Dispatchers.IO) {
+            service.getTransactions(transactionRequest)
         }
     }
 
@@ -157,15 +158,14 @@ class ZarinPal(config: Config) {
      * @param paymentRefundRequest Request data for refunding the payment.
      * @return [PaymentRefundResponse] containing refund details.
      */
-    fun paymentRefund(
+    suspend fun paymentRefund(
         paymentRefundRequest: PaymentRefundRequest
     ): PaymentRefundResponse? {
-
         Validator.validateSessionId(paymentRefundRequest.sessionId)
         Validator.validateAmount(paymentRefundRequest.amount, minAmount = 20_000)
 
-        return runBlocking {
-            async { service.paymentRefund(paymentRefundRequest) }.await()
+        return withContext(Dispatchers.IO) {
+            service.paymentRefund(paymentRefundRequest)
         }
     }
 }
