@@ -86,12 +86,17 @@ publishing {
         maven {
             url = uri("https://maven.pkg.github.com/alirezabashi98/zarinpal-sdk")
             credentials {
+<<<<<<< Updated upstream
                 credentials.username = "alirezabashi98@gmail.com"
                 credentials.password = "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"
 //                username = System.getenv("GITHUB_USER")
 //                password = System.getenv("GITHUB_TOKEN")
                 println("username : ${System.getenv("GITHUB_USER")}")
                 println("token : ${System.getenv("GITHUB_TOKEN")}")
+=======
+                credentials.username = System.getenv("GITHUB_USER")
+                credentials.password = System.getenv("GITHUB_TOKEN")
+>>>>>>> Stashed changes
             }
         }
     }
