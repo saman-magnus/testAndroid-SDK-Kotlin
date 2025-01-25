@@ -1,5 +1,3 @@
-import org.gradle.internal.impldep.org.eclipse.jgit.transport.CredentialItem.Username
-
 plugins {
     kotlin("plugin.serialization") version "2.0.0"
     id("com.android.library") version "8.8.0"
@@ -8,7 +6,9 @@ plugins {
     id("org.jetbrains.dokka") version "1.8.20"
 }
 
-val ktor_version = "1.6.3"
+val ktorVersion = "1.6.3"
+val libraryVersion = "1.0.0"
+
 
 android {
     namespace = "com.example.zarinpal"
@@ -59,7 +59,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "com.example"
             artifactId = "zarinpal"
-            version = "1.0.0"
+            version = libraryVersion
 
             afterEvaluate {
                 from(components["release"])
@@ -70,10 +70,10 @@ publishing {
 
             pom {
                 dependencies {
-                    implementation("io.ktor:ktor-client-core:$ktor_version")
-                    implementation("io.ktor:ktor-client-android:$ktor_version")
-                    implementation("io.ktor:ktor-client-serialization:$ktor_version")
-                    implementation("io.ktor:ktor-client-logging:$ktor_version")
+                    implementation("io.ktor:ktor-client-core:$ktorVersion")
+                    implementation("io.ktor:ktor-client-android:$ktorVersion")
+                    implementation("io.ktor:ktor-client-serialization:$ktorVersion")
+                    implementation("io.ktor:ktor-client-logging:$ktorVersion")
                     implementation("ch.qos.logback:logback-classic:1.2.3")
                     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
                 }
@@ -93,24 +93,12 @@ publishing {
     }
 }
 dependencies {
-    api("io.ktor:ktor-client-core:$ktor_version") {
-        isTransitive = true
-    }
-    api("io.ktor:ktor-client-android:$ktor_version") {
-        isTransitive = true
-    }
-    api("io.ktor:ktor-client-serialization:$ktor_version") {
-        isTransitive = true
-    }
-    api("io.ktor:ktor-client-logging:$ktor_version") {
-        isTransitive = true
-    }
-    api("ch.qos.logback:logback-classic:1.2.3") {
-        isTransitive = true
-    }
-    api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0") {
-        isTransitive = true
-    }
+    implementation("io.ktor:ktor-client-core:$ktorVersion")
+    implementation("io.ktor:ktor-client-android:$ktorVersion")
+    implementation("io.ktor:ktor-client-serialization:$ktorVersion")
+    implementation("io.ktor:ktor-client-logging:$ktorVersion")
+    implementation("ch.qos.logback:logback-classic:1.2.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
     implementation("androidx.core:core-ktx:1.13.0")
 }
 
