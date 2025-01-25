@@ -5,6 +5,7 @@ plugins {
     id("com.android.library") version "8.8.0"
     id("org.jetbrains.kotlin.android") version "1.9.0"
     id("maven-publish")
+    id("org.jetbrains.dokka") version "1.8.20"
 }
 
 val ktor_version = "1.6.3"
@@ -48,6 +49,11 @@ android {
     }
 }
 
+tasks.register<Jar>("javadocJar") {
+    archiveClassifier.set("javadoc")
+    from(tasks.dokkaJavadoc.get().outputDirectory)
+}
+
 publishing {
     publications {
         create<MavenPublication>("maven") {
@@ -58,7 +64,9 @@ publishing {
             afterEvaluate {
                 from(components["release"])
             }
-//            artifact("build/outputs/aar/zarinPal-release.aar")
+            artifact(tasks["javadocJar"]) {
+                classifier = "javadoc"
+            }
 
             pom {
                 dependencies {
