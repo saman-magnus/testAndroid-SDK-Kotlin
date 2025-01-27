@@ -1,93 +1,262 @@
-# ZarinpalNewSdk
+ZarinPal In App Billing - Purchase SDK | MPG
+============================================
+ZarinPal Purchase SDK Provides payment methods on your Android Application.
+[پارسی](https://www.zarinpal.com/docs/sdkDocs/)
 
 
+Introduction
+=============
+ZarinPal in-app purchases are the simplest solution to selling digital products or content on Android apps. So many app developers who want to sell digital goods or offer premium membership to users can simply use the it, in-app billing process for smooth and easy checkouts.
 
-## Getting started
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+<p align="center" width="100%">
+<img src="https://raw.githubusercontent.com/alirezabashi98/zarinpal-sdk/main/new_logo.svg" alt="sample" width="300" height="100"/>
+</p>
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
 
-## Add your files
+Requirements
+============
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+*   Android 7.0 (API level 24) and above
 
+Installation
+============
+
+**Step 1**
+
+Add this to your root settings.gradle at the end of repositories.
+```gradle
+    dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        ...
+        maven { url = uri("https://jitpack.io") }
+        }
+    }
+```    
+
+**Step 2**
+
+Add the dependency:
+```gradle
+    dependencies {
+     implementation("com.github.alirezabashi98:zarinpal-sdk:1.0.0")
+    }
 ```
-cd existing_repo
-git remote add origin https://gitlab.hamrah.in/AmirahmadAdibi/zarinpalnewsdk.git
-git branch -M main
-git push -uf origin main
-```
 
-## Integrate with your tools
+How to use
+==========
 
-- [ ] [Set up project integrations](https://gitlab.hamrah.in/AmirahmadAdibi/zarinpalnewsdk/-/settings/integrations)
+*   add Permissions in your `Manifest.xml`:
+```xml
+   <uses-permission android:name="android.permission.INTERNET"/>
+```    
 
-## Collaborate with your team
+Initialize the billing client
+=============================
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+**Step 1**
+* To start using the SDK, you need to configure the settings for `merchant_id` and `sandbox`. These settings allow you to use the SDK in either sandbox (testing) or live mode. In certain specific cases, such as refunds or transaction management, you may also need an `access_token`.
+```kotlin
+import com.example.zarinpal.ZarinPal
+import com.example.zarinpal.data.remote.dto.Config
 
-## Test and Deploy
+val zarinPal = ZarinPal(
+    Config(
+        merchantId = "your-merchant-id",
+        token = "your-access-token",
+        sandBox = true
+    )
+)
+```    
 
-Use the built-in continuous integration in GitLab.
+**Step 2 - Payment Request**
+* The `createPayment` method allows you to create a new payment request and redirect the user to the payment gateway. This method is used to send payment-related information and receive an `authority` to guide the user to the payment page.
+```kotlin
+import com.example.zarinpal.ZarinPal
+import com.example.zarinpal.data.remote.dto.create.CreatePaymentDataResponse
+import com.example.zarinpal.data.remote.dto.create.CreatePaymentRequest
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+val request = CreatePaymentRequest(
+    amount = 20000,
+    callbackUrl = "https://yourwebsite.com/callback",
+    description = "test"
+)
 
-***
+try {
+    MainScope().launch {
+        response =
+            zarinPal.createPayment(request, redirectUrl = {  paymentGatewayUri, status ->
+                if (status == 100)
+                    print("paymentGatewayUri : $paymentGatewayUri")
+            })
+    }
+} catch (e: Exception) {
+    print(e.message)
+}
+```    
 
-# Editing this README
+**Payment Verification**
+* The `paymentVerify` method allows you to check and verify the transaction status after the user returns from the payment gateway. Using this method, you can validate the payment details and confirm the transaction if the payment was successful.
+```kotlin
+import com.example.zarinpal.ZarinPal
+import com.example.zarinpal.data.remote.dto.verification.PaymentVerificationDataResponse
+import com.example.zarinpal.data.remote.dto.verification.PaymentVerifyRequest
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+val request = PaymentVerifyRequest(
+    amount = amount,
+    authority = "your authority"
+)
+try {
+    MainScope().launch {
+        response = zarinPal.paymentVerify(request)
+        print(response)
+    }
+} catch (e: Exception) {
+    print(e.message)
+}
+```   
 
-## Suggestions for a good README
+**Transaction Inquiry**
+* The `paymentInquiry` method allows you to check and inquire about the status of a transaction. This method is used when you want to obtain more detailed information about the transaction status after creating a payment request or confirming a payment.
+```kotlin
+import com.example.zarinpal.ZarinPal
+import com.example.zarinpal.data.remote.dto.inquiry.PaymentInquiryDataResponse
+import com.example.zarinpal.data.remote.dto.inquiry.PaymentInquiryRequest
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+val request = PaymentInquiryRequest(authority = "authority")
+try {
+    MainScope().launch {
+        response = zarinPal.paymentInquiry(request)
+        print(response)
+    }
+} catch (e: Exception) {
+    print(e.message)
+}
+```  
 
-## Name
-Choose a self-explaining name for your project.
+**Inquiry of Unverified Transactions**
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+* The method for inquiring unverified transactions allows you to retrieve a list of unverified transactions from the payment gateway. This method can be used to review transactions whose status has not yet been determined.
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+```kotlin
+import com.example.zarinpal.ZarinPal
+import com.example.zarinpal.data.remote.dto.unVerified.PaymentUnVerifiedDataResponse
+import com.example.zarinpal.data.remote.dto.unVerified.PaymentUnVerifiedRequest
+import com.example.zarinpal.data.remote.dto.Config
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+val zarinPal = ZarinPal(
+        Config(
+            merchantId = "your-merchant-id",
+        )
+    )
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+  try {
+    MainScope().launch {
+      response = zarinPal.paymentUnVerified()
+      print(response)
+    }
+  } catch (ex: Exception) {
+     print(ex.message)
+  }
+```   
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+**Transaction Reversal**
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+* The `transactionReversal` method allows you to reverse successful transactions that occurred within 30 minutes of the payment, refunding the amount to the buyer's account without any fees.
+* To use this service, your server's IP must be configured for the payment gateway. Otherwise, you will encounter error 62-.
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+```kotlin
+import com.example.zarinpal.ZarinPal
+import com.example.zarinpal.data.remote.dto.Config
+import com.example.zarinpal.data.remote.dto.reverse.PaymentReverseDataResponse
+import com.example.zarinpal.data.remote.dto.reverse.PaymentReverseRequest
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+val zarinPal = ZarinPal(
+        Config(
+            merchantId = "your-merchant-id",
+        )
+    )
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+  try {
+      MainScope().launch {
+        val request = PaymentReverseRequest(
+            authority = "authority"
+        )
+        val response = zarinPal.paymentReverse(request)
+        print(response)
+      }
+    } catch (ex: Exception) {
+      print(ex.message)
+    }
+```    
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+**Refund**
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+* The `refund` method allows you to instantly or in batch cycles refund the full amount or a part of it to the buyer's account in case of order changes or cancellations, incorrect payments, or any other requirement to return the funds.
 
-## License
-For open source projects, say how it is licensed.
+```kotlin
+import com.example.zarinpal.ZarinPal
+import com.example.zarinpal.data.remote.dto.Config
+import com.example.zarinpal.data.remote.dto.refund.PaymentRefundRequest
+import com.example.zarinpal.data.remote.dto.refund.PaymentRefundResponse
+import com.example.zarinpal.data.remote.dto.verification.PaymentVerificationDataResponse
+import com.example.zarinpal.data.remote.enum.MethodEnum
+import com.example.zarinpal.data.remote.enum.ReasonEnum
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+val zarinPal = ZarinPal(
+    Config(
+        merchantId = "your-merchant-id",
+    )
+)
+
+try {
+    MainScope().launch {
+        val request = PaymentRefundRequest(
+            amount = 20000,
+            description = "des",
+            sessionId = "id",
+            method = MethodEnum.PAYA,
+            reason = ReasonEnum.OTHER,
+        )
+        val response = zarinPal.paymentRefund(request)
+        print(response)
+    }
+} catch (ex: Exception) {
+    print(ex.message)
+}
+```  
+
+**Transaction List**
+
+* The `transactionList` method allows you to retrieve all transactions related to a specific terminal. This method can be used to view the status of transactions and filter them.
+
+```kotlin
+import com.example.zarinpal.ZarinPal
+import com.example.zarinpal.data.remote.dto.Config
+import com.example.zarinpal.ZarinPal
+import com.example.zarinpal.data.remote.dto.transaction.Session
+import com.example.zarinpal.data.remote.dto.transaction.TransactionRequest
+import com.example.zarinpal.data.remote.enum.FilterEnum
+
+val zarinPal = ZarinPal(
+        Config(
+            token = "your-access-token",
+        )
+    )
+
+  try{
+    MainScope().launch {
+      val request = TransactionRequest(
+            terminalId = textFieldTerminalId.text,
+            filter = FilterEnum.ALL,
+            limit = 25,
+            offset = 0
+        )
+      val response = zarinPal.getTransactions(request)
+      print(response)
+    }
+  } catch (e: Exception) {
+    print(e.message)
+  }
+```    
