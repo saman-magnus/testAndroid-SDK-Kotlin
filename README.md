@@ -84,7 +84,7 @@ val request = CreatePaymentRequest(
 )
 
 try {
-    MainScope().launch {
+    CoroutineScope(Dispatchers.IO).launch {
         response =
             zarinPal.createPayment(request, redirectUrl = {  paymentGatewayUri, status ->
                 if (status == 100)
@@ -108,7 +108,7 @@ val request = PaymentVerifyRequest(
     authority = "your authority"
 )
 try {
-    MainScope().launch {
+    CoroutineScope(Dispatchers.IO).launch {
         response = zarinPal.paymentVerify(request)
         print(response)
     }
@@ -126,7 +126,7 @@ import com.example.zarinpal.data.remote.dto.inquiry.PaymentInquiryRequest
 
 val request = PaymentInquiryRequest(authority = "authority")
 try {
-    MainScope().launch {
+    CoroutineScope(Dispatchers.IO).launch {
         response = zarinPal.paymentInquiry(request)
         print(response)
     }
@@ -152,7 +152,7 @@ val zarinPal = ZarinPal(
     )
 
   try {
-    MainScope().launch {
+      CoroutineScope(Dispatchers.IO).launch {
       response = zarinPal.paymentUnVerified()
       print(response)
     }
@@ -179,7 +179,7 @@ val zarinPal = ZarinPal(
     )
 
   try {
-      MainScope().launch {
+      CoroutineScope(Dispatchers.IO).launch {
         val request = PaymentReverseRequest(
             authority = "authority"
         )
@@ -211,7 +211,7 @@ val zarinPal = ZarinPal(
 )
 
 try {
-    MainScope().launch {
+    CoroutineScope(Dispatchers.IO).launch {
         val request = PaymentRefundRequest(
             amount = 20000,
             description = "des",
@@ -246,7 +246,7 @@ val zarinPal = ZarinPal(
     )
 
   try{
-    MainScope().launch {
+      CoroutineScope(Dispatchers.IO).launch {
       val request = TransactionRequest(
             terminalId = textFieldTerminalId.text,
             filter = FilterEnum.ALL,
